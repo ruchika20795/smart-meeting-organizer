@@ -20,7 +20,7 @@ const RowContainer = styled.div`
   justify-content: space-between;
 `;
 
-export default function AddMeeting({ buildingsList }) {
+export default function AddMeeting({ buildingsList, refetchData }) {
   const [building, setBuilding] = useState(buildingsList[0].id);
   const [title, setTitle] = useState(null);
   const [date, setDate] = useState(null);
@@ -32,11 +32,12 @@ export default function AddMeeting({ buildingsList }) {
     <Container>
       {showNext ? (
         <DisplayFreeRooms
-          building={building}
+          building={Number(building)}
           title={title}
           date={date}
           startTime={startTime}
           endTime={endTime}
+          refetchData={refetchData}
         />
       ) : (
         <>

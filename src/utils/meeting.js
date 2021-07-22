@@ -10,12 +10,10 @@ import { getCurrentTime, getTimeAsNumberOfMinutes } from './date';
  */
 export const getMeetingRoomDetails = (meetingRoom, date, time) => {
     const currentDate = new Date().toLocaleDateString('en-GB'); 
-    // console.log(date, time, currentDate);
     const meetingsOnThisDate = meetingRoom.meetings.filter(m => m.date === (date || currentDate));
     const res = {meeting: {today: 0, now: 0}, meetingRoom: {free: true}};
     res.meeting.today = meetingsOnThisDate.length;
     if (meetingRoom.meetings.length === 0 || meetingsOnThisDate.length > 0) {
-        console.log(meetingsOnThisDate);
         const meetingsGoingOn = meetingsOnThisDate.filter(m => !checkIfMeetingGoingOn(m, time));
         res.meetingRoom.free = (meetingsGoingOn.length === 0);
         res.meeting.now = meetingsGoingOn.length;

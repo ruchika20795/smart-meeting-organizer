@@ -7,13 +7,13 @@ import Loader from './components/Loader';
 
 function App() {
 
-    const { loading, data } = useQuery(getAllBuildingsQuery);
+    const { called, loading, data } = useQuery(getAllBuildingsQuery);
 
-    if (loading) {
+    if (called && loading) {
         return <Loader fullHeight />
     }
 
-    return (
+    return data && data.Buildings ? (
         <Router>
             <Switch>
                 <Route exact path="/">
@@ -24,7 +24,7 @@ function App() {
                 </Route>
             </Switch>
         </Router>
-    );
+    ) : null;
 }
 
 export default App;

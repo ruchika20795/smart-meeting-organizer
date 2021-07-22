@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllMeetingRooms, addMeetingQuery } from '../utils/queries';
 import Card from '../components/Card';
-import { useQuery, useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation } from '@apollo/client';
 import Loader from '../components/Loader';
 import StyledButton from '../components/StyledButton';
 import { getMeetingRoomDetails } from '../utils/meeting';
@@ -14,17 +14,22 @@ export default function DisplayFreeRooms({
   startTime,
   endTime,
 }) {
-  const { loading, data } = useQuery(getAllMeetingRooms);
+  const [fetchData, {called,  loading, data }] = useLazyQuery(getAllMeetingRooms, {fetchPolicy: "network-only"});
   const [addMeeting, { data: savedMeeting, loading: saving, error }] = useMutation(addMeetingQuery);
 
   const [freeRooms, setFreeRooms] = useState([]);
   const [selectedFreeRoom, setSelectedFreeRoom] = useState(null);
   const [showSuccesssMsg, setShowSuccessMsg] = useState(false);
 
+  useEffect(() => {
+    fetchData();
+  }, [])
+
   // Filtering meeting rooms based on selected data.
   useEffect(() => {
     if (
       !loading &&
+      called &&
       data &&
       data.MeetingRooms &&
       data.MeetingRooms.length !== 0
@@ -35,9 +40,10 @@ export default function DisplayFreeRooms({
       });
       setFreeRooms(free);
     }
-  }, [loading, data, building, date, startTime]);
+  }, [called, loading, data, building, date, startTime]);
 
   const saveMeetingRoom = () => {
+    fetchData(); // refetch data and check if room still available
     addMeeting({
       variables: {
         id: getRandomNumber(),
@@ -52,6 +58,7 @@ export default function DisplayFreeRooms({
 
   useEffect(() => {
     if (savedMeeting && !error && !saving) {
+      
       setShowSuccessMsg(true);
     }
   }, [savedMeeting, saving, error]);
